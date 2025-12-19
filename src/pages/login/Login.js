@@ -1,23 +1,48 @@
-import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import { initializeRUM } from '../../datadog-rum';
+import { datadogRum } from '@datadog/browser-rum';
+import { useState } from 'react';
 
 function Login() {
+  const [userId, setUserId] = useState('');
+  const [error, setError] = useState('');
+  const navigate = useNavigate();
+
+  const handleUserId = (e) => {
+    setUserId(e?.target?.value);
+  };
+
+  const login = () => {
+    if (!userId) return setError('Please provide userId');
+    // on successful login we initialize the RUM
+    initializeRUM();
+    datadogRum.setUser({
+      id: userId,
+    });
+    setTimeout(() => {
+      navigate('/home');
+    }, 3000);
+  };
+
   return (
     <div className="w-25 mx-auto">
       <h3>Login</h3>
       <div className="mb-3">
-        <label htmlFor="username" className="form-label">
-          Username
+        <label htmlFor="userId" className="form-label">
+          Enter user Id
         </label>
-        <input type="text" name="username" className="form-control" />
+        <input
+          type="text"
+          name="userId"
+          className="form-control"
+          onChange={handleUserId}
+        />
       </div>
-      <div>
-        <label htmlFor="password" className="form-label">
-          Password
-        </label>
-        <input type="password" name="password" className="form-control" />
-      </div>
+      <p className="text-danger">{error}</p>
       <div className="d-flex justify-content-end mt-3">
-        <button className="btn btn-primary">Login</button>
+        <button className="btn btn-primary" onClick={login}>
+          Login
+        </button>
       </div>
     </div>
   );

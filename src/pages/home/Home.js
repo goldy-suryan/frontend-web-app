@@ -30,7 +30,7 @@ function Home() {
         <input type="text" onChange={handleChange} name="username" />
       </p>
       <Tabs
-        defaultActiveKey="profile"
+        defaultActiveKey="user"
         id="uncontrolled-tab-example"
         className="mb-3"
       >
@@ -38,7 +38,7 @@ function Home() {
           <User />
         </Tab>
         <Tab eventKey="profile" title="Profile">
-          <Profile />
+          <Profile {...{username}}/>
         </Tab>
         <Tab eventKey="contact" title="Contact">
           Tab content for Contact

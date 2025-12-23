@@ -1,12 +1,34 @@
 import { datadogLogs } from '@datadog/browser-logs';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
-function Profile() {
+function Profile({username}) {
   const [todos, setTodos] = useState([]);
+  const [filteredData, setFilteredData] = useState([]);
+
   useEffect(() => {
     datadogLogs.logger.info('Profile page: flkadsjfklsdkfjlasdk');
     apiCall();
   }, []);
+
+  let debounce = (fn, delay) => {
+    let timer;
+    // throw new Error('error here');
+    return function(...args) {
+      clearTimeout(timer);
+      timer = setTimeout(() => fn.apply(this, args), delay);
+    }
+  }
+
+  const debouncedFilter = useMemo(() => {
+    return debounce((name, list) => {
+      let result = list.filter(item => item?.title?.toLowerCase()?.includes(name?.toLowerCase()));
+      setFilteredData(result);
+    }, 700)
+  }, []);
+
+  useEffect(() => {
+    debouncedFilter(username, todos);
+  }, [username, todos, debouncedFilter])
 
   const apiCall = async () => {
     try {
@@ -25,7 +47,7 @@ function Profile() {
     <div>
       <h3>Profile</h3>
       <ul>
-        {todos.map((item) => {
+        {filteredData?.map((item) => {
           return <li key={item.id}>{item?.title}</li>;
         })}
       </ul>

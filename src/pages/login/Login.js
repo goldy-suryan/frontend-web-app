@@ -1,12 +1,19 @@
 import { useNavigate } from 'react-router-dom';
 import { initializeRUM } from '../../datadog-rum';
 import { datadogRum } from '@datadog/browser-rum';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 function Login() {
   const [userId, setUserId] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  const token = localStorage.getItem('auth_token');
+
+  useEffect(() => {
+    if(token) {
+      navigate('/home');
+    }
+  }, [token])
 
   const handleUserId = (e) => {
     setUserId(e?.target?.value);
@@ -15,10 +22,9 @@ function Login() {
   const login = () => {
     if (!userId) return setError('Please provide userId');
     // on successful login we initialize the RUM
-    initializeRUM();
-    datadogRum.setUser({
-      id: userId,
-    });
+    localStorage.setItem('auth_token', userId);
+    initializeRUM(userId);
+ 
     setTimeout(() => {
       navigate('/home');
     }, 3000);

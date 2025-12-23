@@ -4,11 +4,15 @@ import { useNavigate } from 'react-router-dom';
 
 function Logout() {
   const navigate = useNavigate();
+
   const handleLogout = () => {
     datadogRum.clearUser();
     datadogRum.stopSessionReplayRecording();
     datadogRum.clearGlobalContext();
+    datadogRum.stopSession();
+    localStorage.removeItem('auth_token');
 
+    // Need to confirm this
     datadogLogs.removeGlobalContextProperty('ddsource');
     navigate('/');
   };

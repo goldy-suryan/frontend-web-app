@@ -4,7 +4,7 @@ import { datadogLogs } from '@datadog/browser-logs';
 
 let isInitialized = false;
 
-export function initializeRUM() {
+export function initializeRUM(userId) {
   if (isInitialized) return;
   isInitialized = true;
 
@@ -25,7 +25,12 @@ export function initializeRUM() {
     trackInteractions: true,
     plugins: [reactPlugin({ router: true })],
   });
+  datadogRum.startView();
   datadogRum.startSessionReplayRecording();
+
+  datadogRum.setUser({
+    id: userId,
+  });
 
   // Logs
   datadogLogs.init({
@@ -38,4 +43,6 @@ export function initializeRUM() {
     sampleRate: 100,
   });
   datadogLogs.setGlobalContextProperty('ddsource', 'browser');
+  datadogLogs.setGlobalContextProperty('hello', 'world'); // custom property or tags for easy filtering of logs
+  // For reference: https://docs.datadoghq.com/logs/log_collection/javascript/?tab=npm
 }
